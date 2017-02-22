@@ -12107,6 +12107,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = {
     props: ['user', 'video'],
@@ -12114,11 +12121,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             viewers: [],
             comments: [],
-            body: 'Your comment'
+            body: '',
+            count: 0
         };
     },
     mounted: function mounted() {
-        console.log('Component mounted.');
         this.listen();
         this.getComments();
     },
@@ -12137,20 +12144,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios.post('/api/videos/' + this.video.id + '/comment?api_token=' + this.user.api_token, {
                 body: this.body
             }).then(function (response) {
+                _this2.body = '';
                 _this2.comments.unshift(response.data);
             });
         },
         listen: function listen() {
             var _this3 = this;
 
-            Echo.join('video').here(function (users) {}).joining(function (user) {
-                // this.viewers.push(user);
-                console.table(_this3.viewers);
+            Echo.join('video').here(function (users) {
+                _this3.count = users.length;
+            }).joining(function (user) {
+                _this3.count++;
             }).leaving(function (user) {
-                // this.viewers.pop(user);
-                // console.table(this.viewers);
+                _this3.count--;
             }).listen('NewComment', function (e) {
-                _this3.comments.unshift(e.comment);
+                _this3.comments.unshift(e);
             });
         }
     }
@@ -36698,16 +36706,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "row"
   }, [_c('div', {
-    staticClass: "col-sm-7"
-  }, [_c('iframe', {
-    attrs: {
-      "width": "640",
-      "height": "480",
-      "src": "https://www.youtube.com/embed/Xip2TgAEVz4",
-      "frameborder": "0",
-      "allowfullscreen": ""
-    }
-  })], 1), _vm._v(" "), _c('div', {
     staticClass: "col-sm-5"
   }, [_c('div', {
     staticClass: "panel panel-primary"
@@ -36725,7 +36723,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       staticClass: "left clearfix"
     }, [_vm._m(1, true), _vm._v(" "), _c('div', {
       staticClass: "chat-body clearfix"
-    }, [_vm._m(2, true), _vm._v(" "), _c('p', [_vm._v("\n                                    " + _vm._s(comment.body) + "\n                                ")])])])
+    }, [_c('div', {
+      staticClass: "header"
+    }, [_c('strong', {
+      staticClass: "primary-font"
+    }, [_vm._v(_vm._s(comment.user.name))]), _vm._v(" "), _vm._m(2, true)]), _vm._v(" "), _c('p', [_vm._v("\n                                    " + _vm._s(comment.body) + "\n                                ")])])])
   }))]), _vm._v(" "), _c('div', {
     staticClass: "panel-footer"
   }, [_c('div', {
@@ -36741,7 +36743,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "btn-input",
       "type": "text",
-      "placeholder": "Type your message here..."
+      "placeholder": "Type your message here...",
+      "autofocus": ""
     },
     domProps: {
       "value": _vm._s(_vm.body)
@@ -36769,7 +36772,21 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.postComment()
       }
     }
-  }, [_vm._v("\n                                Send")])])])])])])])])])
+  }, [_vm._v("\n                                Send")])])])])])])]), _vm._v(" "), _c('div', {
+    staticClass: "col-sm-7"
+  }, [_c('iframe', {
+    attrs: {
+      "width": "640",
+      "height": "280",
+      "src": "https://www.youtube.com/embed/Xip2TgAEVz4",
+      "frameborder": "0",
+      "allowfullscreen": ""
+    }
+  })], 1)]), _vm._v(" "), _c('div', {
+    staticClass: "row"
+  }, [_c('div', {
+    staticClass: "col-sm-12"
+  }, [_c('h1', [_vm._v("\n                " + _vm._s(_vm.count) + " watching now\n            ")])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "panel-heading",
@@ -36802,15 +36819,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   })])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "header"
-  }, [_c('strong', {
-    staticClass: "primary-font"
-  }, [_vm._v("Jack Sparrow")]), _vm._v(" "), _c('small', {
+  return _c('small', {
     staticClass: "pull-right text-muted"
   }, [_c('span', {
     staticClass: "glyphicon glyphicon-time"
-  }), _vm._v("12 mins ago")])])
+  }), _vm._v("12 mins ago")])
 }]}
 module.exports.render._withStripped = true
 if (false) {

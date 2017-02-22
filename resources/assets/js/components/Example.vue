@@ -1,10 +1,7 @@
 <template>
 <div class="container">
     <div class="row">
-        <div class="col-sm-7">
-            <iframe width="640" height="480" src="https://www.youtube.com/embed/Xip2TgAEVz4" frameborder="0" allowfullscreen></iframe>
-        </div>
-        <div class="col-sm-5">
+    <div class="col-sm-5">
             <div class="panel panel-primary">
                 <div class="panel-heading" id="accordion">
                     <span class="glyphicon glyphicon-comment"></span> Chat
@@ -23,7 +20,7 @@
                         </span>
                             <div class="chat-body clearfix">
                                 <div class="header">
-                                    <strong class="primary-font">Jack Sparrow</strong> <small class="pull-right text-muted">
+                                    <strong class="primary-font">{{ comment.user.name }}</strong> <small class="pull-right text-muted">
                                         <span class="glyphicon glyphicon-time"></span>12 mins ago</small>
                                 </div>
                                 <p>
@@ -35,7 +32,7 @@
                 </div>
                 <div class="panel-footer">
                     <div class="input-group">
-                        <input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." v-model="body" @keyup.enter="postComment()" />
+                        <input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." v-model="body" @keyup.enter="postComment()" autofocus />
                         <span class="input-group-btn">
                             <button class="btn btn-warning btn-sm" id="btn-chat" @click.prevent="postComment()">
                                 Send</button>
@@ -44,6 +41,16 @@
                 </div>
             </div>
             </div>
+        </div>
+        <div class="col-sm-7">
+            <iframe width="640" height="280" src="https://www.youtube.com/embed/Xip2TgAEVz4" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h1>
+                {{ count }} watching now
+            </h1>
         </div>
     </div>
 </div>
@@ -56,11 +63,11 @@
             return {
                 viewers: [],
                 comments: [],
-                body: 'Your comment'
+                body: '',
+                count: 0
             }
         },
         mounted() {
-            console.log('Component mounted.');
             this.listen();
             this.getComments();
         },
@@ -76,24 +83,23 @@
                     body: this.body
                 })
                 .then((response) => {
+                    this.body= '';
                     this.comments.unshift(response.data);
                 });
             },
             listen() {
                 Echo.join('video')
                     .here((users) => {
-                        
+                        this.count = users.length;
                     })
                     .joining((user) => {
-                        // this.viewers.push(user);
-                        console.table(this.viewers);
+                        this.count++;
                     })
                     .leaving((user) => {
-                        // this.viewers.pop(user);
-                        // console.table(this.viewers);
+                        this.count--;
                     })
                     .listen('NewComment', (e) => {
-                        this.comments.unshift(e.comment);
+                        this.comments.unshift(e);
                     });
             }
         }
